@@ -1,30 +1,39 @@
-import requests
+import cloudscraper
 from bs4 import BeautifulSoup
 
 class PriceScraper:
-    def __init__(self, headers=None):
-        self.headers = headers or {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-            "Accept-Language": "pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7"
-        }
+    def __init__(self):
+        self.scraper = cloudscraper.create_scraper(
+            browser={
+                'browser': 'chrome',
+                'platform': 'windows',
+                'desktop': True
+            }
+        )
 
     def get_price(self, url: str, price_selector: str) -> float | None:
+
         try:
-            response = requests.get(url, headers=self.headers, timeout=10)
-            response.raise_for_status()  # Rzuca błędem, jeśli strona nie odpowie 200 
+            response = self.scraper.get(url, timeout=15)
+            response.raise_for_status()
 
             soup = BeautifulSoup(response.text, 'html.parser')
             
             price_element = soup.select_one(price_selector)
 
             if price_element:
-                return self._clean_price(price_element.text)
+                if price_element.name == 'meta' and price_element.has_attr('content'):
+                    raw_price = price_element['content']
+                else:
+                    raw_price = price_element.text
+                    
+                return self._clean_price(raw_price)
             
             print(f"Nie znaleziono ceny na stronie (niepoprawny selektor?): {url}")
             return None
 
-        except requests.RequestException as e:
-            print(f"Błąd sieci podczas pobierania strony {url}: {e}")
+        except Exception as e:
+            print(f"Błąd podczas pobierania strony przez cloudscraper {url}: {e}")
             return None
 
     def _clean_price(self, raw_price: str) -> float:
