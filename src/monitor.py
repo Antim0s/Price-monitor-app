@@ -2,6 +2,8 @@ from plyer import notification
 from src.scraper.core import PriceScraper
 from src.scraper.config import SHOPS_SELECTORS
 from src.database.db import DatabaseManager
+import time
+import random
 
 class PriceMonitor:
     def __init__(self):
@@ -41,7 +43,8 @@ class PriceMonitor:
                 print(f"-> SUKCES: Nowa cena {current_price} PLN zapisana w bazie.")
             else:
                 print("-> PORAŻKA: Nie udało się pobrać i zapisać ceny.")
-                
+            time.sleep(random.uniform(2, 5))   
+                 
         print("\nAktualizacja cen zakończona!")
 
     def _check_price_change(self, product_name: str, old_price: float, new_price: float):
