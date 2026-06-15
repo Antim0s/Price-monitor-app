@@ -72,10 +72,20 @@ class PriceTrackerApp(ctk.CTk):
                 date_text = f"Aktualizacja: {date_str}"
                 
                 price_container = ctk.CTkFrame(card, fg_color="transparent")
-                price_container.pack(side="right", padx=20, pady=5)
+                price_container.pack(side="right", padx=10, pady=5)
                 
                 ctk.CTkLabel(price_container, text=price_text, font=ctk.CTkFont(size=18, weight="bold"), text_color="#2ecc71").pack(anchor="e")
                 ctk.CTkLabel(price_container, text=date_text, font=ctk.CTkFont(size=11), text_color="gray").pack(anchor="e")
+
+                history_btn = ctk.CTkButton(
+                    card, 
+                    text="📈 Historia", 
+                    width=90, 
+                    fg_color="#34495e", 
+                    hover_color="#2c3e50",
+                    command=lambda p=prod_id, n=name: self.open_history_dialog(p, n)
+                )
+                history_btn.pack(side="right", padx=10)
             else:
                 ctk.CTkLabel(card, text="Brak pobranej ceny", font=ctk.CTkFont(size=14, slant="italic"), text_color="gray").pack(side="right", padx=20)
 
@@ -143,3 +153,42 @@ class PriceTrackerApp(ctk.CTk):
             dialog.destroy() 
 
         ctk.CTkButton(dialog, text="✔ Zapisz produkt", command=save_action, fg_color="#27ae60", hover_color="#2ecc71").pack(pady=(10, 20))
+
+
+
+    def open_history_dialog(self, product_id: int, product_name: str):
+        history_window = ctk.CTkToplevel(self)
+        history_window.title(f"Historia cen: {product_name}")
+        history_window.geometry("500x400")
+        
+        history_window.transient(self)
+        history_window.grab_set()
+
+        title_lbl = ctk.CTkLabel(history_window, text=product_name, font=ctk.CTkFont(size=16, weight="bold"))
+        title_lbl.pack(pady=(15, 10), padx=20)
+
+        scroll_frame = ctk.CTkScrollableFrame(history_window, width=440, height=300)
+        scroll_frame.pack(pady=10, padx=20, fill="both", expand=True)
+
+        history_data = self.db.get_price_history(product_id)
+
+        if not history_data:
+            ctk.CTkLabel(scroll_frame, text="Brak historii cen dla tego produktu.", font=ctk.CTkFont(size=14)).pack(pady=50)
+            return
+
+        header_frame = ctk.CTkFrame(scroll_frame, fg_color="transparent")
+        header_frame.pack(fill="x", padx=10, pady=5)
+        ctk.CTkLabel(header_frame, text="Data sprawdzenia", font=ctk.CTkFont(weight="bold")).pack(side="left")
+        ctk.CTkLabel(header_frame, text="Cena", font=ctk.CTkFont(weight="bold")).pack(side="right")
+
+        separator = ctk.CTkFrame(scroll_frame, height=2, fg_color="gray50")
+        separator.pack(fill="x", padx=5, pady=5)
+
+        for price, check_date in history_data:
+            row = ctk.CTkFrame(scroll_frame, fg_color="transparent")
+            row.pack(fill="x", padx=10, pady=2)
+            
+            formatted_date = check_date[:16].replace("-", ".")
+            
+            ctk.CTkLabel(row, text=formatted_date, font=ctk.CTkFont(size=13)).pack(side="left")
+            ctk.CTkLabel(row, text=f"{price} PLN", font=ctk.CTkFont(size=13, weight="bold"), text_color="#2ecc71").pack(side="right")

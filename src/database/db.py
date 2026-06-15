@@ -71,3 +71,12 @@ class DatabaseManager:
                 (product_id,)
             )
             return cursor.fetchone()
+        
+    def get_price_history(self, product_id: int) -> List[Tuple]:
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT price, check_date FROM price_history WHERE product_id = ? ORDER BY check_date DESC",
+                (product_id,)
+            )
+            return cursor.fetchall()
