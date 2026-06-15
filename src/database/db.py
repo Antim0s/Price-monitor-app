@@ -61,3 +61,13 @@ class DatabaseManager:
             cursor = conn.cursor()
             cursor.execute("SELECT id, name, url, shop_name FROM products")
             return cursor.fetchall()
+        
+
+    def get_latest_price(self, product_id: int) -> Tuple | None:
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT price, check_date FROM price_history WHERE product_id = ? ORDER BY check_date DESC LIMIT 1",
+                (product_id,)
+            )
+            return cursor.fetchone()

@@ -61,6 +61,22 @@ class PriceTrackerApp(ctk.CTk):
             name_lbl = ctk.CTkLabel(card, text=f"{name} ({shop_name})", font=ctk.CTkFont(size=16, weight="bold"))
             name_lbl.pack(side="left", padx=20, pady=15)
 
+            latest_data = self.db.get_latest_price(prod_id)
+
+            if latest_data:
+                price, date = latest_data
+                date_str = date[:16]
+                price_text = f"{price} PLN"
+                date_text = f"Aktualizacja: {date_str}"
+                
+                price_container = ctk.CTkFrame(card, fg_color="transparent")
+                price_container.pack(side="right", padx=20, pady=5)
+                
+                ctk.CTkLabel(price_container, text=price_text, font=ctk.CTkFont(size=18, weight="bold"), text_color="#2ecc71").pack(anchor="e")
+                ctk.CTkLabel(price_container, text=date_text, font=ctk.CTkFont(size=11), text_color="gray").pack(anchor="e")
+            else:
+                ctk.CTkLabel(card, text="Brak pobranej ceny", font=ctk.CTkFont(size=14, slant="italic"), text_color="gray").pack(side="right", padx=20)
+
     def update_prices_thread(self):
         self.refresh_btn.configure(state="disabled", text="Pobieranie...")
         
