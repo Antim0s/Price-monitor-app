@@ -3,7 +3,9 @@ import threading
 import webbrowser 
 from src.database.db import DatabaseManager
 from src.monitor import PriceMonitor
-from src.scraper.config import SHOPS_SELECTORS  
+from src.scraper.config import SHOPS_SELECTORS 
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg 
 
 ctk.set_appearance_mode("System")  # System, Dark, lub Light
 ctk.set_default_color_theme("blue")
@@ -159,22 +161,46 @@ class PriceTrackerApp(ctk.CTk):
     def open_history_dialog(self, product_id: int, product_name: str):
         history_window = ctk.CTkToplevel(self)
         history_window.title(f"Historia cen: {product_name}")
-        history_window.geometry("500x400")
+        history_window.geometry("750x650") 
         
         history_window.transient(self)
         history_window.grab_set()
 
-        title_lbl = ctk.CTkLabel(history_window, text=product_name, font=ctk.CTkFont(size=16, weight="bold"))
-        title_lbl.pack(pady=(15, 10), padx=20)
-
-        scroll_frame = ctk.CTkScrollableFrame(history_window, width=440, height=300)
-        scroll_frame.pack(pady=10, padx=20, fill="both", expand=True)
+        title_lbl = ctk.CTkLabel(history_window, text=product_name, font=ctk.CTkFont(size=18, weight="bold"))
+        title_lbl.pack(pady=(15, 5), padx=20)
 
         history_data = self.db.get_price_history(product_id)
 
         if not history_data:
-            ctk.CTkLabel(scroll_frame, text="Brak historii cen dla tego produktu.", font=ctk.CTkFont(size=14)).pack(pady=50)
+            ctk.CTkLabel(history_window, text="Brak historii cen dla tego produktu.", font=ctk.CTkFont(size=14)).pack(pady=50)
             return
+
+        
+        chronological_data = list(reversed(history_data))
+        dates = [row[1][5:16].replace("-", ".") for row in chronological_data] # Ucinamy rok, zostawiamy MM.DD HH:MM
+        prices = [row[0] for row in chronological_data]
+
+        fig, ax = plt.subplots(figsize=(7, 3), dpi=100)
+        fig.patch.set_facecolor('#242424')  
+        ax.set_facecolor('#242424')         
+        
+        ax.plot(dates, prices, marker='o', color='#2ecc71', linewidth=2, markersize=6)
+        
+        ax.tick_params(axis='x', colors='white', rotation=15)
+        ax.tick_params(axis='y', colors='white')
+        ax.spines['bottom'].set_color('gray')
+        ax.spines['left'].set_color('gray')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        
+        fig.tight_layout()
+
+        canvas = FigureCanvasTkAgg(fig, master=history_window)
+        canvas.draw()
+        canvas.get_tk_widget().pack(pady=10, padx=20, fill="x")
+
+        scroll_frame = ctk.CTkScrollableFrame(history_window, width=700, height=200)
+        scroll_frame.pack(pady=10, padx=20, fill="both", expand=True)
 
         header_frame = ctk.CTkFrame(scroll_frame, fg_color="transparent")
         header_frame.pack(fill="x", padx=10, pady=5)
@@ -189,6 +215,5 @@ class PriceTrackerApp(ctk.CTk):
             row.pack(fill="x", padx=10, pady=2)
             
             formatted_date = check_date[:16].replace("-", ".")
-            
             ctk.CTkLabel(row, text=formatted_date, font=ctk.CTkFont(size=13)).pack(side="left")
             ctk.CTkLabel(row, text=f"{price} PLN", font=ctk.CTkFont(size=13, weight="bold"), text_color="#2ecc71").pack(side="right")
