@@ -44,50 +44,50 @@ Projekt został zbudowany z zachowaniem zasad czystej architektury i separacji w
 
 ```
 ## 🚀 Uruchomienie (Dla deweloperów)
-Aby uruchomić projekt ze źródeł, postępuj zgodnie z poniższymi instrukcjami:
+Aby uruchomić projekt ze źródeł, postępuj zgodnie z poniższymi instrukcjami:  
 
 Sklonuj repozytorium:
 
-Bash
-git clone https://github.com/Antim0s/Price-monitor-app
-cd Price-monitor-app
+Bash  
+git clone https://github.com/Antim0s/Price-monitor-app  
+cd Price-monitor-app  
 Utwórz i aktywuj środowisko wirtualne:
 
 Windows:
 
-Bash
-python -m venv venv
+Bash  
+python -m venv venv  
 .\venv\Scripts\activate
 
 Linux/macOS:
 
-Bash
-python3 -m venv venv
-source venv/bin/activate
-Zainstaluj wymagane zależności:
+Bash  
+python3 -m venv venv  
+source venv/bin/activate  
+Zainstaluj wymagane zależności:  
 
-Bash
-pip install -r requirements.txt
-Uruchom aplikację:
+Bash  
+pip install -r requirements.txt  
+Uruchom aplikację:  
 
-Bash
-python main.py
+Bash  
+python main.py  
 
 ## 🧪 Uruchamianie testów jednostkowych
 Kluczowe komponenty aplikacji (scraper oraz baza danych) zostały pokryte testami jednostkowymi. Do testowania bazy wykorzystano mechanizm tymczasowych plików na dysku (tmp_path), aby nie ingerować w prawdziwą bazę użytkownika.
 
 Aby uruchomić testy, wpisz w terminalu:
 
-Bash
-pytest
+Bash  
+pytest  
 
 ## 📦 Wdrożenie (Uruchomienie dla użytkownika końcowego)
 Aplikacja może zostać skompilowana do jednego, samodzielnego pliku wykonywalnego (.exe) za pomocą narzędzia PyInstaller. Dzięki temu użytkownik nie musi posiadać zainstalowanego środowiska Python.
 
 Komenda generująca paczkę:
 
-Bash
-pyinstaller --noconfirm --onefile --windowed --collect-all customtkinter --collect-all matplotlib main.py
+Bash  
+pyinstaller --noconfirm --onefile --windowed --collect-all customtkinter --collect-all matplotlib main.py  
 Gotowy program znajdzie się w wygenerowanym folderze dist/ pod nazwą main.exe. Wystarczy go uruchomić dwukrotnym kliknięciem.
 
 Autor: Bartłomeij Sieradzki
