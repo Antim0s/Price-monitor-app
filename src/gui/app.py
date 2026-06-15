@@ -1,7 +1,9 @@
 import customtkinter as ctk
 import threading
+import webbrowser 
 from src.database.db import DatabaseManager
 from src.monitor import PriceMonitor
+from src.scraper.config import SHOPS_SELECTORS  
 
 ctk.set_appearance_mode("System")  # System, Dark, lub Light
 ctk.set_default_color_theme("blue")
@@ -34,7 +36,7 @@ class PriceTrackerApp(ctk.CTk):
         self.refresh_btn = ctk.CTkButton(self.sidebar_frame, text="Sprawdź teraz ceny", command=self.update_prices_thread)
         self.refresh_btn.grid(row=1, column=0, padx=20, pady=10)
 
-        self.add_btn = ctk.CTkButton(self.sidebar_frame, text="+ Dodaj produkt", fg_color="transparent", border_width=2)
+        self.add_btn = ctk.CTkButton(self.sidebar_frame, text="+ Dodaj produkt", fg_color="transparent", border_width=2, command=self.open_add_product_dialog)
         self.add_btn.grid(row=2, column=0, padx=20, pady=10)
 
     def _create_main_frame(self):
@@ -86,3 +88,58 @@ class PriceTrackerApp(ctk.CTk):
             self.refresh_product_list()
 
         threading.Thread(target=run_monitor, daemon=True).start()
+    
+
+    def open_add_product_dialog(self):
+        dialog = ctk.CTkToplevel(self)
+        dialog.title("Dodaj nowy produkt")
+        dialog.geometry("450x450")
+        
+        dialog.transient(self)
+        dialog.grab_set()
+
+        ctk.CTkLabel(dialog, text="Wybierz sklep:", font=ctk.CTkFont(weight="bold")).pack(pady=(20, 5))
+        
+        shop_combo = ctk.CTkComboBox(dialog, values=list(SHOPS_SELECTORS.keys()), width=300)
+        shop_combo.pack(pady=5)
+
+        def open_browser():
+            shop = shop_combo.get()
+            urls = {
+                "komputronik": "https://www.komputronik.pl",
+                "taniaksiazka": "https://www.taniaksiazka.pl"
+            }
+            if shop in urls:
+                webbrowser.open(urls[shop])
+
+        ctk.CTkButton(dialog, text="🌐 Otwórz wybrany sklep w przeglądarce", fg_color="#34495e", hover_color="#2c3e50", command=open_browser).pack(pady=(5, 15))
+
+        ctk.CTkLabel(dialog, text="Nazwa produktu (własna):", font=ctk.CTkFont(weight="bold")).pack(pady=(10, 5))
+        name_entry = ctk.CTkEntry(dialog, width=300, placeholder_text="np. Książka Wiedźmin")
+        name_entry.pack(pady=5)
+
+        ctk.CTkLabel(dialog, text="Link do produktu (URL):", font=ctk.CTkFont(weight="bold")).pack(pady=(10, 5))
+        url_entry = ctk.CTkEntry(dialog, width=300, placeholder_text="Wklej skopiowany link...")
+        url_entry.pack(pady=5)
+
+        error_label = ctk.CTkLabel(dialog, text="", text_color="red")
+        error_label.pack(pady=5)
+
+        def save_action():
+            name = name_entry.get().strip()
+            url = url_entry.get().strip()
+            shop = shop_combo.get()
+
+            if not name or not url:
+                error_label.configure(text="Uzupełnij nazwę i wklej link!")
+                return
+            
+            if "http" not in url:
+                error_label.configure(text="Link musi zawierać http/https!")
+                return
+
+            self.db.add_product(name, url, shop)
+            self.refresh_product_list()
+            dialog.destroy() 
+
+        ctk.CTkButton(dialog, text="✔ Zapisz produkt", command=save_action, fg_color="#27ae60", hover_color="#2ecc71").pack(pady=(10, 20))
