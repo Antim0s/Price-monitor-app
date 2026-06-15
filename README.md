@@ -42,14 +42,14 @@ Projekt został zbudowany z zachowaniem zasad czystej architektury i separacji w
  ┣ 📜 requirements.txt# Lista zależności projektu
  ┗ 📜 README.md       # Dokumentacja
 
-
- 🚀 Uruchomienie (Dla deweloperów)
+```bash
+🚀 Uruchomienie (Dla deweloperów)
 Aby uruchomić projekt ze źródeł, postępuj zgodnie z poniższymi instrukcjami:
 
 Sklonuj repozytorium:
 
 Bash
-git clone <LINK_DO_TWOJEGO_REPOZYTORIUM>
+git clone https://github.com/Antim0s/Price-monitor-app
 cd Price-monitor-app
 Utwórz i aktywuj środowisko wirtualne:
 
