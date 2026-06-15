@@ -80,3 +80,11 @@ class DatabaseManager:
                 (product_id,)
             )
             return cursor.fetchall()
+        
+    
+    def delete_product(self, product_id: int):
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM price_history WHERE product_id = ?", (product_id,))
+            cursor.execute("DELETE FROM products WHERE id = ?", (product_id,))
+            conn.commit()

@@ -65,6 +65,30 @@ class PriceTrackerApp(ctk.CTk):
             name_lbl = ctk.CTkLabel(card, text=f"{name} ({shop_name})", font=ctk.CTkFont(size=16, weight="bold"))
             name_lbl.pack(side="left", padx=20, pady=15)
 
+            btn_container = ctk.CTkFrame(card, fg_color="transparent")
+            btn_container.pack(side="right", padx=10)
+
+            delete_btn = ctk.CTkButton(
+                btn_container, 
+                text="🗑️ Usuń", 
+                width=70, 
+                fg_color="#c0392b", 
+                hover_color="#e74c3c", 
+                command=lambda p=prod_id: self.delete_product_action(p)
+            )
+            delete_btn.pack(side="right", padx=5)
+
+            # Przycisk historii
+            history_btn = ctk.CTkButton(
+                btn_container, 
+                text="📈 Historia", 
+                width=90, 
+                fg_color="#34495e", 
+                hover_color="#2c3e50",
+                command=lambda p=prod_id, n=name: self.open_history_dialog(p, n)
+            )
+            history_btn.pack(side="right", padx=5)
+
             latest_data = self.db.get_latest_price(prod_id)
 
             if latest_data:
@@ -78,18 +102,9 @@ class PriceTrackerApp(ctk.CTk):
                 
                 ctk.CTkLabel(price_container, text=price_text, font=ctk.CTkFont(size=18, weight="bold"), text_color="#2ecc71").pack(anchor="e")
                 ctk.CTkLabel(price_container, text=date_text, font=ctk.CTkFont(size=11), text_color="gray").pack(anchor="e")
-
-                history_btn = ctk.CTkButton(
-                    card, 
-                    text="📈 Historia", 
-                    width=90, 
-                    fg_color="#34495e", 
-                    hover_color="#2c3e50",
-                    command=lambda p=prod_id, n=name: self.open_history_dialog(p, n)
-                )
-                history_btn.pack(side="right", padx=10)
             else:
                 ctk.CTkLabel(card, text="Brak pobranej ceny", font=ctk.CTkFont(size=14, slant="italic"), text_color="gray").pack(side="right", padx=20)
+
 
     def update_prices_thread(self):
         self.refresh_btn.configure(state="disabled", text="Pobieranie...")
@@ -217,3 +232,8 @@ class PriceTrackerApp(ctk.CTk):
             formatted_date = check_date[:16].replace("-", ".")
             ctk.CTkLabel(row, text=formatted_date, font=ctk.CTkFont(size=13)).pack(side="left")
             ctk.CTkLabel(row, text=f"{price} PLN", font=ctk.CTkFont(size=13, weight="bold"), text_color="#2ecc71").pack(side="right")
+
+
+    def delete_product_action(self, product_id: int):
+        self.db.delete_product(product_id)
+        self.refresh_product_list()
