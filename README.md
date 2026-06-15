@@ -42,8 +42,8 @@ Projekt został zbudowany z zachowaniem zasad czystej architektury i separacji w
  ┣ 📜 requirements.txt# Lista zależności projektu
  ┗ 📜 README.md       # Dokumentacja
 
-```bash
-🚀 Uruchomienie (Dla deweloperów)
+```
+## 🚀 Uruchomienie (Dla deweloperów)
 Aby uruchomić projekt ze źródeł, postępuj zgodnie z poniższymi instrukcjami:
 
 Sklonuj repozytorium:
@@ -73,14 +73,15 @@ Uruchom aplikację:
 Bash
 python main.py
 
-🧪 Uruchamianie testów jednostkowych
+## 🧪 Uruchamianie testów jednostkowych
 Kluczowe komponenty aplikacji (scraper oraz baza danych) zostały pokryte testami jednostkowymi. Do testowania bazy wykorzystano mechanizm tymczasowych plików na dysku (tmp_path), aby nie ingerować w prawdziwą bazę użytkownika.
 
 Aby uruchomić testy, wpisz w terminalu:
 
 Bash
 pytest
-📦 Wdrożenie (Uruchomienie dla użytkownika końcowego)
+
+## 📦 Wdrożenie (Uruchomienie dla użytkownika końcowego)
 Aplikacja może zostać skompilowana do jednego, samodzielnego pliku wykonywalnego (.exe) za pomocą narzędzia PyInstaller. Dzięki temu użytkownik nie musi posiadać zainstalowanego środowiska Python.
 
 Komenda generująca paczkę:
