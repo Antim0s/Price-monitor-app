@@ -41,6 +41,18 @@ class PriceTrackerApp(ctk.CTk):
         self.add_btn = ctk.CTkButton(self.sidebar_frame, text="+ Dodaj produkt", fg_color="transparent", border_width=2, command=self.open_add_product_dialog)
         self.add_btn.grid(row=2, column=0, padx=20, pady=10)
 
+        self.autopilot_var = ctk.StringVar(value="off")
+        self.autopilot_switch = ctk.CTkSwitch(
+            self.sidebar_frame, 
+            text="🔄 Autopilot (1h)", 
+            command=self.toggle_autopilot,
+            variable=self.autopilot_var, 
+            onvalue="on", 
+            offvalue="off",
+            button_color="#2ecc71" 
+        )
+        self.autopilot_switch.grid(row=3, column=0, padx=20, pady=10)
+
     def _create_main_frame(self):
         self.main_frame = ctk.CTkScrollableFrame(self, corner_radius=10)
         self.main_frame.grid(row=0, column=1, padx=20, pady=20, sticky="nsew")
@@ -237,3 +249,14 @@ class PriceTrackerApp(ctk.CTk):
     def delete_product_action(self, product_id: int):
         self.db.delete_product(product_id)
         self.refresh_product_list()
+
+
+
+    def toggle_autopilot(self):
+        if self.autopilot_var.get() == "on":
+            self.run_autopilot_cycle()
+
+    def run_autopilot_cycle(self):
+        if self.autopilot_var.get() == "on":
+            self.update_prices_thread()
+            self.after(3600000, self.run_autopilot_cycle)
