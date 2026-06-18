@@ -4,5 +4,6 @@ SHOPS_SELECTORS = {
     "empik": 'meta[property="product:price:amount"], meta[itemprop="price"], span[data-ta="price"]',
     "militaria": 'meta[itemprop="price"], span.current-price-value, span.product-price',
     "vobis": 'meta[property="product:price:amount"], meta[itemprop="price"], div.price',
-    "gandalf": 'meta[property="product:price:amount"], meta[itemprop="price"], span.price'
-}
+    "gandalf": 'meta[property="product:price:amount"], meta[itemprop="price"], span.price',
+    "sklep testowy": 'meta[itemprop="price"], span.price, p.price'
+    }

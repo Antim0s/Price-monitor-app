@@ -12,30 +12,29 @@ class PriceScraper:
             }
         )
 
-    def get_price(self, url: str, price_selector: str) -> float | None:
-
+    def get_price(self, url: str, selector: str) -> float:
         try:
-            response = self.scraper.get(url, timeout=15)
+            headers = {
+                "ngrok-skip-browser-warning": "true"
+            }
+            
+            response = self.scraper.get(url, timeout=15, headers=headers)
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, 'html.parser')
-            
-            price_element = soup.select_one(price_selector)
 
-            if price_element:
-                if price_element.name == 'meta' and price_element.has_attr('content'):
-                    raw_price = price_element['content']
-                else:
-                    raw_price = price_element.text
-                    
-                return self._clean_price(raw_price)
-            
+            for sel in selector.split(','):
+                element = soup.select_one(sel.strip())
+                if element:
+                    price_text = element.get('content') if element.name == 'meta' else element.text
+                    return self._clean_price(price_text)
+
             print(f"Nie znaleziono ceny na stronie (niepoprawny selektor?): {url}")
-            return None
+            return 0.0
 
         except Exception as e:
-            print(f"Błąd podczas pobierania strony przez cloudscraper {url}: {e}")
-            return None
+            print(f"Błąd podczas scrapowania {url}: {e}")
+            return 0.0
 
     def _clean_price(self, price_str: str) -> float:
         if not price_str:

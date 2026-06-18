@@ -156,7 +156,8 @@ class PriceTrackerApp(ctk.CTk):
                 "taniaksiazka": "https://www.taniaksiazka.pl",
                 "militaria": "https://e-militaria.pl/",
                 "vobis": "https://vobis.pl",
-                "gandalf": "https://www.gandalf.com.pl"
+                "gandalf": "https://www.gandalf.com.pl",
+                "sklep testowy": " https://yiddish-hull-encrypt.ngrok-free.dev"
             }
             if shop in urls:
                 webbrowser.open(urls[shop])
