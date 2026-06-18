@@ -1,11 +1,9 @@
-# tests/test_scraper.py
-
+from unittest.mock import patch
 import pytest
 from src.scraper.core import PriceScraper
 
 @pytest.fixture
 def scraper():
-    """Przygotowuje instancję scrapera przed każdym testem."""
     return PriceScraper()
 
 def test_clean_price_standard(scraper):
@@ -23,3 +21,20 @@ def test_clean_price_hard_spaces(scraper):
 def test_clean_price_invalid_string(scraper):
     result = scraper._clean_price("Brak towaru")
     assert result == 0.0
+
+
+def test_clean_price_regex():
+    scraper = PriceScraper()
+    dirty_text = "\n                                        249,99\xa0zł\n    "
+    clean_price = scraper._clean_price(dirty_text)
+    
+    assert clean_price == 249.99
+
+def test_get_price_network_error():
+    scraper = PriceScraper()
+    
+    with patch.object(scraper.scraper, 'get', side_effect=Exception("Symulowany brak internetu/odmowa dostępu!")):
+        
+        price = scraper.get_price("https://sklep.pl/produkt", "span.price")
+        
+        assert price == 0.0
