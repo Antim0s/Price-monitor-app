@@ -123,10 +123,14 @@ class PriceTrackerApp(ctk.CTk):
         
         def run_monitor():
             self.monitor.update_all_prices()
-            self.refresh_btn.configure(state="normal", text="Sprawdź teraz ceny")
-            self.refresh_product_list()
+            
+            self.after(0, self._finish_update_prices)
 
         threading.Thread(target=run_monitor, daemon=True).start()
+
+    def _finish_update_prices(self):
+        self.refresh_btn.configure(state="normal", text="Sprawdź teraz ceny")
+        self.refresh_product_list()
     
 
     def open_add_product_dialog(self):
