@@ -6,6 +6,7 @@ from src.monitor import PriceMonitor
 from src.scraper.config import SHOPS_SELECTORS 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg 
+import sys
 
 ctk.set_appearance_mode("System")  # System, Dark, lub Light
 ctk.set_default_color_theme("blue")
@@ -19,6 +20,8 @@ class PriceTrackerApp(ctk.CTk):
 
         self.title("Monitor Cen Produktów")
         self.geometry("900x600")
+
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
         
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -150,7 +153,10 @@ class PriceTrackerApp(ctk.CTk):
             shop = shop_combo.get()
             urls = {
                 "komputronik": "https://www.komputronik.pl",
-                "taniaksiazka": "https://www.taniaksiazka.pl"
+                "taniaksiazka": "https://www.taniaksiazka.pl",
+                "militaria": "https://e-militaria.pl/",
+                "vobis": "https://vobis.pl",
+                "gandalf": "https://www.gandalf.com.pl"
             }
             if shop in urls:
                 webbrowser.open(urls[shop])
@@ -264,3 +270,13 @@ class PriceTrackerApp(ctk.CTk):
         if self.autopilot_var.get() == "on":
             self.update_prices_thread()
             self.after(3600000, self.run_autopilot_cycle)
+
+
+    
+    def on_closing(self):
+        print("Zamykanie aplikacji...")
+        self.autopilot_var.set("off") 
+        
+        self.quit()     
+        self.destroy()  
+        sys.exit(0)    

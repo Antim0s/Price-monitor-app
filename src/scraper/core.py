@@ -1,5 +1,6 @@
 import cloudscraper
 from bs4 import BeautifulSoup
+import re
 
 class PriceScraper:
     def __init__(self):
@@ -36,10 +37,16 @@ class PriceScraper:
             print(f"Błąd podczas pobierania strony przez cloudscraper {url}: {e}")
             return None
 
-    def _clean_price(self, raw_price: str) -> float:
-        clean_str = raw_price.replace("zł", "").replace("PLN", "").replace(" ", "").replace("\xa0", "").replace(",", ".").strip()
+    def _clean_price(self, price_str: str) -> float:
+        if not price_str:
+            return 0.0
+            
         try:
-            return float(clean_str)
-        except ValueError:
-            print(f"Nie udało się przekonwertować ceny: '{raw_price}'")
+            text = price_str.replace('\xa0', '').replace(' ', '').replace(',', '.')
+            
+            clean_text = re.sub(r'[^\d.]', '', text)
+            
+            return float(clean_text)
+        except Exception as e:
+            print(f"Błąd podczas czyszczenia ceny '{price_str}': {e}")
             return 0.0
